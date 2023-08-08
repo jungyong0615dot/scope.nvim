@@ -19,12 +19,17 @@ end
 function M.serialize_state()
     local core = require("scope.core")
     local scope_cache = {}
+    local last_tab = core.last_tab
     for k, v in pairs(core.cache) do
-        scope_cache[k] = utils.get_buffer_names(v)
+        if v ~= nil then
+            scope_cache[#scope_cache + 1] = utils.get_buffer_names(v)
+        elseif k < core.last_tab then
+            last_tab = last_tab - 1
+        end
     end
     local state = {
         cache = scope_cache,
-        last_tab = core.last_tab,
+        last_tab = last_tab,
     }
     return vim.json.encode(state)
 end
